@@ -1,1 +1,8 @@
-A very simple budget estimator using KnockoutJS.
+A simple budget estimator using KnockoutJS.
+-------------------------------------------
+
+*   Add spending categories
+*   Enter either a monthly or yearly allowance for each category.  Enter a monthly value and the yearly will be calculated and vice-versa.
+*   All values are totalled automatically
+
+View Online: http://paloverde.github.com/Budgenator/
