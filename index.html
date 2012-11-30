@@ -27,6 +27,7 @@
                                 <th>Name</th>
                                 <th>Annual Allowance</th>
                                 <th>Monthly Allowance</th>
+                                <th> - </th>
                             </tr>
                         </thead>
 
@@ -37,6 +38,7 @@
                                 <td><strong>Totals</strong></td>
                                 <td data-bind="text: annualTotal()"></td>
                                 <td data-bind="text: monthlyTotal()"></td>
+                                <td></td>
                             </tr>
                         </tfoot>
                     </table>
@@ -48,6 +50,7 @@
                 <td><strong data-bind="text: name"></strong></td>
                 <td><input type="text" data-bind="value: annually" placeholder="Annual Allowance"></td>
                 <td><input type="text" data-bind="value: monthly" placeholder="Monthly Allownace"></td>
+                <td><a href="#" data-bind="click: function () {App.instance.removeCategory(this);}">Remove</a></td>
             </tr>
         </script>
         
