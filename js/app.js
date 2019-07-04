@@ -1,98 +1,130 @@
-var App = App || {};
+var app = angular.module('app', []);
+app.controller('AppController', function ($scope) {
+  $scope.templates = [];
+  $scope.currentTemplate = {};
+  $scope.isBudgeting = false;
+  $scope.isEditing = false;
 
-App.Category = function(name) {
-    this.name = name;
-    this.annually = ko.observable(localStorage.getItem(name + "Annually") || 0);
-    this.monthly = ko.observable(localStorage.getItem(name + "Monthly") || 0);
-    
-    this.annually.subscribe(this.updateMonthlyAllowance.bind(this));
-    this.monthly.subscribe(this.updateAnnualAllowance.bind(this));
-};
+  $scope.setTemplate = function (template) {
+    $scope.currentTemplate = template;
+  };
 
-App.Category.prototype = {
-    updateAnnualAllowance: function (val) {
-        var amount = Number(val * 12).toFixed(1);
-        localStorage.setItem(this.name + "Annually", amount);
-        
-        if (this.annually() != amount) {
-            this.annually(amount);
-        }
-    },
-    
-    updateMonthlyAllowance: function (val) {
-        var amount = Number(val / 12).toFixed(1);
-        localStorage.setItem(this.name + "Monthly", amount);
-        
-        if (this.monthly() != amount) {
-            this.monthly(amount);
-        }
-    }
-};
+  $scope.getTemplate = function () {
+    return $scope.currentTemplate;
+  };
 
-App.ViewModel = function() {
-    this.categories = ko.observableArray();
-    
-    // Initialize locally stored categories as an array
-    if (!localStorage.getItem("categories")) {
-        localStroage.setItem("categories", "[]");
-    } else {
-        localCategories = JSON.parse(localStorage.getItem("categories"));
-        for (var i = 0; i < localCategories.length; i++) {
-            this.categories.push(new App.Category(localCategories[i]));
-        }
-    }
-    
-    // Watch the categories for changes
-    this.categories.subscribe(this.persistCategories.bind(this));
-};
+  $scope.edit = function (template) {
+    template = template || {};
+    $scope.isBudgeting = false;
+    $scope.setTemplate(template);
+    $scope.isEditing = true;
+  };
 
-App.ViewModel.prototype = {
-    addCategory: function (formEl) {
-        var name = jQuery(formEl).find("input[type='text']").first().val();
-        
-        if (name) {
-            this.categories.push(new App.Category(name));
-        }
-        
-        // clear the form value
-        jQuery(formEl).find("input[type='text']").first().val('');
-    },
-    
-    persistCategories: function (categories) {
-        var names = new Array();
-        for (var i = 0; i < categories.length; i++) {
-            names.push(categories[i].name);
-        }
-        
-        localStorage.setItem('categories', JSON.stringify(names));
-    },
-    
-    removeCategory: function (category) {
-        localStorage.setItem(category.name + "Annually", '');
-        localStorage.setItem(category.name + "Monthly", '');
-        this.categories.remove(category);
-    },
-    
-    annualTotal: function () {
-        var total = 0;
-        
-        for (var i = 0; i < this.categories().length; i++) {
-            total += +this.categories()[i].annually();
-        }
-        
-        return total;
-    },
-    
-    monthlyTotal: function () {
-        var total = 0;
-        
-        for (var i = 0; i < this.categories().length; i++) {
-            total += +this.categories()[i].monthly();
-        }
-        
-        return total;
-    }
-}
+  $scope.budget = function (template) {
+    template = template || {};
+    $scope.isEditing = false;
+    $scope.setTemplate(template);
+    $scope.isBudgeting = true;
+  };
+});
 
-App.instance = new App.ViewModel();
-ko.applyBindings(App.instance);
+app.directive('navBar', ['$http', '$log', function ($http, $log) {
+  return {
+    restrict: 'E',
+    templateUrl: 'templates/navbar.html',
+    controller: function ($scope) {
+      $http.get('budget-templates.json').success(function (data) {
+        $scope.templates = data;
+        if (data.length) {
+          $scope.budget(data[0]);
+        }
+      }.bind(this));
+
+      this.selectTemplate = function (template) {
+        $scope.budget(template);
+      },
+
+      this.newTemplate = function () {
+        $scope.edit({});
+      }
+    },
+    controllerAs: 'navbar'
+  };
+}]);
+
+app.directive('budgetCalculator', ['$log', function ($log) {
+  return {
+    restrict: 'E',
+    templateUrl: 'templates/budgetor.html',
+    controller: function ($scope) {
+      $scope.$watch('currentTemplate', function () {
+        this.budget = {};
+        this.shortTotal = 0;
+        this.longTotal = 0;
+      }.bind(this));
+
+      this.shortChange = function (category) {
+        var multiplier = +$scope.getTemplate().timeframes.ratio;
+        this.budget[category].long = this.budget[category].short * multiplier;
+        this.calculateTotals();
+      };
+
+      this.longChange = function (category) {
+        var multiplier = +$scope.getTemplate().timeframes.ratio;
+        this.budget[category].short = this.budget[category].long / multiplier;
+        this.calculateTotals();
+      };
+
+      this.calculateTotals = function () {
+        var short = 0;
+        var long = 0;
+        Object.keys(this.budget).forEach(function (category) {
+          short += +this.budget[category].short;
+          long += +this.budget[category].long;
+        }.bind(this));
+        this.shortTotal = short;
+        this.longTotal = long;
+      };
+    },
+    controllerAs: 'calculator'
+  }
+}]);
+
+app.directive('templateEditor', function () {
+  return {
+    restrict: 'E',
+    templateUrl: 'templates/editor.html',
+    controller: function ($scope) {
+      this.template = {};
+
+      $scope.$watch('currentTemplate', function () {
+        this.template = $scope.getTemplate();
+        if (!this.template.timeframes) this.template.timeframes = {
+          short: '',
+          long: '',
+          ratio: ''
+        };
+
+        if (!this.template.categories) this.template.categories = [];
+      }.bind(this));
+
+      this.addCategory = function () {
+        if (this.categoryInput) {
+          this.template.categories.push(this.categoryInput);
+          this.categoryInput = '';
+        }
+      };
+
+      this.removeCategory = function (category) {
+        var ind = this.template.categories.indexOf(category);
+        this.template.categories.splice(ind, 1);
+      };
+
+      this.save = function (template) {
+        $scope.templates.push(template);
+        $scope.budget(template);
+      }
+    },
+    controllerAs: 'editor'
+  }
+});

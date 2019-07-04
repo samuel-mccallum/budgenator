@@ -1,0 +1,59 @@
+[
+  {
+    "name": "General Household",
+    "glyphicon": "glyphicon-home",
+    "timeframes": {
+      "short": "Month",
+      "long": "Year",
+      "ratio": 12
+    },
+    "categories": [
+      "Rent/Mortgage",
+      "Food",
+      "Clothing",
+      "Phone",
+      "Internet",
+      "Transportation",
+      "Electrical",
+      "Utilities (other)",
+      "Bills (other)",
+      "Savings"
+    ]
+  },
+  {
+    "name": "Vacation",
+    "glyphicon": "glyphicon-plane",
+    "timeframes": {
+      "short": "Day",
+      "long": "Week",
+      "ratio": 7
+    },
+    "categories": [
+      "Hotel",
+      "Airfair",
+      "Car Rental",
+      "Food",
+      "Entertainment",
+      "Souveniers",
+      "Incendentals"
+    ]
+  },
+  {
+    "name": "Personal Care",
+    "glyphicon": "glyphicon-gift",
+    "timeframes": {
+      "short": "Week",
+      "long": "Month",
+      "ratio": 4
+    },
+    "categories": [
+      "Hair",
+      "Nails",
+      "Makeup",
+      "Toiletries",
+      "Massage",
+      "Acupuncture",
+      "Spa Treatment"
+    ]
+  }
+]

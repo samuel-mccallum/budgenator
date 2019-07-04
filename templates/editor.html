@@ -1,0 +1,62 @@
+<div class="container">
+  <h2>
+    Template Editor
+  </h2>
+  <div class="col-lg-12 col-md-12 col-sm-12">
+    <form>
+      <div class="row">
+        <div class="form-group col-md-6 col-lg-6">
+          <label for="input-name">Template Name</label>
+          <input ng-model="editor.template.name" type="text" class="form-control" id="input-name" placeholder="Name">
+        </div>
+        <div class="form-group col-md-6 col-lg-4">
+          <label for="input-glyphicon">Glyphicon</label>
+          <input ng-model="editor.template.glyhpicon" type="text" class="form-control" id="input-glyphicon" placeholder="glyphicon-plus">
+        </div>
+        <div class="col-md-2 col-lg-2">
+          <h2><span class="glyhpicon {{editor.template.glyhpicon}}"></span></h2>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group col-md-4 col-lg-4">
+          <label for="tf-short">Short Timeframe</label>
+          <input ng-model="editor.template.timeframes.short" type="text" class="form-control" id="tf-short" placeholder="Week">
+        </div>
+        <div class="form-group col-md-4 col-lg-4">
+          <label for="tf-long">Long Timeframe</label>
+          <input ng-model="editor.template.timeframes.long" type="text" class="form-control" id="tf-long" placeholder="Month">
+        </div>
+        <div class="form-group col-md-4 col-lg-4">
+          <label for="tf-ratio">Timeframe Ratio</label>
+          <input ng-model="editor.template.timeframes.ratio" type="text" class="form-control" id="tf-ratio" placeholder="4 [weeks in a month]">
+        </div>
+      </div>
+
+      <h3>Categories</h3>
+      <div class="row col-md-12 col-lg-12">
+        <div class="form-group col-md-4 col-lg-4">
+          <label for="addcat">Add Category</label>
+          <input ng-model="editor.categoryInput" type="text" class="form-control" id="addcat" placeholder="Food">
+        </div>
+        <div class="col-md-2 col-lg-2">
+          <button ng-click="editor.addCategory()" class='btn btn-default'>
+            <span class="glyphicon glyphicon-plus"></span>
+          </button>
+        </div>
+      </div>
+      <div class="col-md-4"
+      <ul>
+        <li ng-repeat="category in editor.template.categories">
+          {{category}}
+          <button ng-click="editor.removeCategory(category)"class="btn btn-default"><span class="glyphicon glyphicon-trash"></span></button>
+        </li>
+      </ul>
+    </div>
+
+      <div class="col-md-12 col-lg-12">
+        <button type="submit" ng-click="editor.save(editor.template)" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>

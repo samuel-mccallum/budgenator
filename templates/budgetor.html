@@ -1,0 +1,41 @@
+<div class="container">
+  <h2>
+    <span class="glyphicon {{getTemplate().glyphicon}}"></span>
+    {{getTemplate().name}}
+  </h2>
+  <div class="col-lg-12 col-md-12 col-sm-12">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Categories</th>
+          <th>{{getTemplate().timeframes.short}}</th>
+          <th>{{getTemplate().timeframes.long}}</th>
+        </tr>
+      </thead>
+
+      <tbody class="table-hover">
+        <tr ng-repeat="category in getTemplate().categories">
+          <td>{{category}}</td>
+          <td>
+            <input
+              ng-model="calculator.budget[category].short"
+              ng-change="calculator.shortChange(category)"
+              class="form-control" type="text">
+          </td>
+          <td>
+            <input
+              ng-model="calculator.budget[category].long"
+              ng-change="calculator.longChange(category)"
+              class="form-control" type="text">
+            </td>
+        </tr>
+      </tbody>
+
+      <tfoot>
+        <td>Totals</td>
+        <td>{{calculator.shortTotal | currency}}</td>
+        <td>{{calculator.longTotal | currency}}</td>
+      </tfoot>
+    </table>
+  </div>
+</div>
